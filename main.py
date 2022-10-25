@@ -4,5 +4,4 @@ from events import *
 from comms import *
 from misc import *
 
-get_guildnames()
 bot.run(token)

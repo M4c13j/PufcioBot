@@ -19,6 +19,10 @@ async def on_message( message ):
     if message.author.id == 649228867399319554:
         await message.channel.send( choice(['Jejo','Kako','Bajo\n\n\nJajo','Jajo','cześć','']))
 
+    if 'robert kubica' in message.content.lower():
+        await message.channel.send('DRAJWER BŁYSKAWICA!')
+    if 'pufcio' in message.content.lower():
+        await message.channel.send('słodziak')
     if 'nig' in message.content.lower():
         await message.channel.send('GER')
     if message.content == 'ping':

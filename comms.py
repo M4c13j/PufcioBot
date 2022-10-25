@@ -1,7 +1,6 @@
 from settings import bot
 import discord
-from ytdlms import *
-
+from ytdlms import * 
 @bot.command()
 async def test(ctx, *args):
     ctx.message.delete()
@@ -41,9 +40,10 @@ async def where_am_i(ctx):
 async def donogi(ctx):
     if not ctx.message.author.voice:
         await ctx.send(f"Nie jesteś na kanale głosowym lol.")
+        return
     else:
         channel = ctx.message.author.voice.channel
-        await channel.connect()
+    await channel.connect()
 
 @bot.command()
 async def spadaj(ctx):
@@ -55,15 +55,24 @@ async def spadaj(ctx):
         await ctx.send(f"{ctx.author.nick} ja nie jestem przy głosie teraz.")
 
 @bot.command()
-async def play(ctx,url):
+async def graj(ctx,url):
     try :
         server = ctx.message.guild
         voice_channel = server.voice_client
 
         async with ctx.typing():
             filename = await YTDLSource.from_url(url, loop=bot.loop)
-            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename))
+            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
         await ctx.send('**Now playing:** {}'.format(filename))
     except:
         await ctx.send("The bot is not connected to a voice channel.")
+
+@bot.command()
+async def stop(ctx):
+    vc = ctx.message.guild.voice_client
+
+@bot.command()
+async def skip(ctx):
+    vc = ctx.message.guild.voice_client
+
 # https://medium.com/pythonland/build-a-discord-bot-in-python-that-plays-music-and-send-gifs-856385e605a1

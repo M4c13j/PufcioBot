@@ -62,7 +62,8 @@ async def graj(ctx,url):
 
         async with ctx.typing():
             filename = await YTDLSource.from_url(url, loop=bot.loop)
-            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
+            print(filename)
+            voice_channel.play(discord.FFmpegPCMAudio(source=filename))
         await ctx.send('**Now playing:** {}'.format(filename))
     except:
         await ctx.send("The bot is not connected to a voice channel.")

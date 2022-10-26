@@ -1,8 +1,15 @@
 from settings import bot
 from random import choice
+
 @bot.event
 async def on_ready():
     print(f"Logged in as a bot {bot.user}")
+    for guild in bot.guilds:
+        for channel in guild.text_channels :
+            if str(channel) == "general" :
+                await channel.send('Bot Activated..')
+                await channel.send(file=discord.File('giphy.png'))
+        print('Active in {}\n Member Count : {}'.format(guild.name,guild.member_count))
 
 @bot.event
 async def on_message( message ):

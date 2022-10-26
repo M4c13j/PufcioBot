@@ -36,7 +36,7 @@ async def where_am_i(ctx):
 
 
 
-@bot.command()
+@bot.command(help="dolacz do kanalu glosowego")
 async def donogi(ctx):
     if not ctx.message.author.voice:
         await ctx.send(f"Nie jesteś na kanale głosowym lol.")
@@ -44,18 +44,20 @@ async def donogi(ctx):
     else:
         channel = ctx.message.author.voice.channel
     await channel.connect()
+    await ctx.send(f"Kicam do ciebie **{ctx.message.author}** na kanał **{channel}**")
 
-@bot.command()
+@bot.command(help="opusc kanal glowy i nie wracaj")
 async def spadaj(ctx):
     vc = ctx.message.guild.voice_client
     if vc.is_connected():
         await vc.dissconnect()
         await ctx.send(f"{ctx.author.nick} sam spadaj.")
     else:
-        await ctx.send(f"{ctx.author.nick} ja nie jestem przy głosie teraz.")
+        await ctx.send(f"**{ctx.author.nick}** ja nie jestem przy głosie teraz.")
 
-@bot.command()
+@bot.command(help="graj muzyke z linku")
 async def graj(ctx,url):
+    await donogi(ctx)
     try :
         server = ctx.message.guild
         voice_channel = server.voice_client
@@ -63,15 +65,30 @@ async def graj(ctx,url):
         async with ctx.typing():
             filename = await YTDLSource.from_url(url, loop=bot.loop)
             print(filename)
-            voice_channel.play(discord.FFmpegPCMAudio(source=filename))
-        await ctx.send('**Now playing:** {}'.format(filename))
+            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
+        filename.replace("_"," ")
+        await ctx.send(f'**Now playing:** {filename}.\n From url:** {url}**')
+        await ctx.message.delete()
     except:
-        await ctx.send("The bot is not connected to a voice channel.")
+        await ctx.send("Nie ma mnie na żadnym kanale **sneed**.")
 
 @bot.command()
-async def stop(ctx):
+async def przestan(ctx):
     vc = ctx.message.guild.voice_client
-
+    if vc.is_playing():
+        await vc.stop()
+        await ctx.send("**STOP** granie muzyki")
+    else:
+        await ctx.send("Jak mam przestać grać, jak **milczę**!")
+        
+@bot.command(help='pomijam piosenke')
+async def pomin(ctx):
+    vc = ctx.message.guild.voice_client
+    if vc.is_playing():
+        await vc.stop()
+        await ctx.send("Granie zatrzymane.")
+    else:
+        await ctx.send("Nie zatrzymam nic, bo nic nie gram **NIG**.")
 @bot.command()
 async def skip(ctx):
     vc = ctx.message.guild.voice_client

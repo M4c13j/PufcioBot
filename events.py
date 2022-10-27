@@ -46,14 +46,14 @@ async def on_message( message ):
     uidr= [649228867399319554, 344798686003593236]
     if message.author.id == uidr[0]:
         nickname = message.author
-        if randrange(0,10) == 4:
+        if randrange(0,100) == 69:
             await message.channel.send( choice(['Jejo','Kako','Bajo\n\n\nJajo','Jajo','cześć',f"pozdram cieplutko {nickname}"]))
-        if randrange(0,10) % 3 == 1:
+        if randrange(0,100) == 69:
             await message.add_reaction("\N{EGG}")
     #pluskwa na mnie
     if message.author.id == uidr[1]:
         nickname = message.author
-        if randrange(0,10) % 3 == 1:
+        if randrange(0,10) % 3 <= 10:
             await message.add_reaction( bot.get_emoji(864435513464061953) )
     # :mac:864435513464061953
 

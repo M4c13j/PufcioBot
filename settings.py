@@ -13,3 +13,5 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix=';', intents=intents)
 
+
+PUSZEK_NAMES = ["pufcio","pufć","puchol","pucholek","puszek","pusio"]

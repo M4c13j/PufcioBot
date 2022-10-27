@@ -82,23 +82,19 @@ async def graj(ctx,url):
         voice_channel = ctx.voice_client
 
         async with ctx.typing():
-            arg = url
-            with youtube_dl.YoutubeDL({'format': 'bestaudio', 'noplaylist':'True'}) as ydl:
-                try: requests.get(arg)
-                except: info = ydl.extract_info(f"ytsearch:{arg}", download=False)['entries'][0]
-                else: info = ydl.extract_info(arg, download=False)
-            source = (info, info['formats'][0]['url'])
-            filename = url
-            FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=source, **FFMPEG_OPTS), after=lambda e: print('Everything done nice ziom', e))
-            # filename = await YTDLSource.from_url(url, loop=bot.loop)
-            # print(filename)
-            # voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
+            # arg = url
+            # with youtube_dl.YoutubeDL({'format': 'bestaudio', 'noplaylist':'True'}) as ydl:
+            #     try: requests.get(arg)
+            #     except: info = ydl.extract_info(f"ytsearch:{arg}", download=False)['entries'][0]
+            #     else: info = ydl.extract_info(arg, download=False)
+            # source = (info, info['formats'][0]['url'])
+            # filename = url
+            # FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+            # voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=source, **FFMPEG_OPTS), after=lambda e: print('Everything done nice ziom', e))
+            filename = await YTDLSource.from_url(url, loop=bot.loop)
+            print(filename)
+            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
         filename.replace("_"," ")
-        # nn = ""
-        # for w in filename.split("_")[:-1]:
-        #     nn += w+" "
-        # await ctx.send(f'**Teraz leci:** \n{filename}.\n From url:** {url}**')
         embed = discord.Embed(title="Teraz leci:", description=f"[**{filename}**]({url})\nOd **{ctx.author}**", color=discord.Color.green())
         await ctx.send(embed=embed)
         await ctx.message.delete()

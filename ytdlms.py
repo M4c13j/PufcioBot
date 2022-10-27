@@ -5,9 +5,9 @@ import asyncio
 youtube_dl.utils.bug_reports_message = lambda: ''
 
 ytdl_format_options = {
-    'format': '140', # 136 - 720p, 137 - 1080p
+    'format': '135', # 136 - 720p, 137 - 1080p
     'restrictfilenames': True,
-    'preferredcodec': "mp3",
+    # 'preferredcodec': "mp3",
     'noplaylist': True,
     'nocheckcertificate': True,
     'ignoreerrors': False,

@@ -1,6 +1,8 @@
 from settings import bot
 import discord
+import os
 from ytdlms import * 
+
 @bot.command()
 async def test(ctx, *args):
     ctx.message.delete()
@@ -41,46 +43,45 @@ async def donogi(ctx):
     if not ctx.message.author.voice:
         await ctx.send(f"Nie jesteś na kanale głosowym lol.")
         return
-    else:
-        channel = ctx.message.author.voice.channel
+    channel = ctx.message.author.voice.channel
     await channel.connect()
     await ctx.send(f"Kicam do ciebie **{ctx.message.author}** na kanał **{channel}**")
 
 @bot.command(help="opusc kanal glowy i nie wracaj")
 async def spadaj(ctx):
     vc = ctx.message.guild.voice_client
-    if vc.is_connected():
-        await vc.dissconnect()
-        await ctx.send(f"{ctx.author.nick} sam spadaj.")
+    if vc:
+        await vc.disconnect()
+        await ctx.send(f"{ctx.message.author} sam **spadaj**.")
     else:
-        await ctx.send(f"**{ctx.author.nick}** ja nie jestem przy głosie teraz.")
+        await ctx.send(f"**{ctx.message.author}** ja nie jestem przy głosie teraz.")
 
 @bot.command(help="graj muzyke z linku")
 async def graj(ctx,url):
-    await donogi(ctx)
+    # removing previously downloadded files
+    for f in os.listdir(os.getcwd()):
+        if f.endswith(".webm") or f.endswith(".part") or f.endswith(".mp3") or f.endswith(".m4a"):
+            os.remove( os.path.join(os.getcwd(), f) )
+
+    if not ctx.message.guild.voice_client.is_connected():
+        await donogi(ctx)
     try :
-        server = ctx.message.guild
-        voice_channel = server.voice_client
+        author = ctx.message.author
+        voice_channel = author.voice_client
 
         async with ctx.typing():
             filename = await YTDLSource.from_url(url, loop=bot.loop)
             print(filename)
             voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
-        filename.replace("_"," ")
-        await ctx.send(f'**Now playing:** {filename}.\n From url:** {url}**')
+        # filename.replace("_"," ")
+        newname = ""
+        for w in filename.split("_")[:-1]:
+            newname += w+" "
+        await ctx.send(f'**Teraz leci:** \n{newname}.\n From url:** {url}**')
         await ctx.message.delete()
     except:
         await ctx.send("Nie ma mnie na żadnym kanale **sneed**.")
 
-@bot.command()
-async def przestan(ctx):
-    vc = ctx.message.guild.voice_client
-    if vc.is_playing():
-        await vc.stop()
-        await ctx.send("**STOP** granie muzyki")
-    else:
-        await ctx.send("Jak mam przestać grać, jak **milczę**!")
-        
 @bot.command(help='pomijam piosenke')
 async def pomin(ctx):
     vc = ctx.message.guild.voice_client
@@ -89,8 +90,7 @@ async def pomin(ctx):
         await ctx.send("Granie zatrzymane.")
     else:
         await ctx.send("Nie zatrzymam nic, bo nic nie gram **NIG**.")
-@bot.command()
-async def skip(ctx):
-    vc = ctx.message.guild.voice_client
+   
 
 # https://medium.com/pythonland/build-a-discord-bot-in-python-that-plays-music-and-send-gifs-856385e605a1
+# https://discordpy.readthedocs.io/en/stable/api.html?highlight=message#

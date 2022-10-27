@@ -46,15 +46,17 @@ async def donogi(ctx):
     channel = ctx.message.author.voice.channel
     await channel.connect()
     await ctx.send(f"Kicam do ciebie **{ctx.message.author}** na kanał **{channel}**")
+    await ctx.message.delete()
 
 @bot.command(help="opusc kanal glowy i nie wracaj")
 async def spadaj(ctx):
-    vc = ctx.message.guild.voice_client
+    vc = ctx.voice_client
     if vc:
         await vc.disconnect()
         await ctx.send(f"{ctx.message.author} sam **spadaj**.")
     else:
         await ctx.send(f"**{ctx.message.author}** ja nie jestem przy głosie teraz.")
+    await ctx.message.delete()
 
 @bot.command(help="graj muzyke z linku")
 async def graj(ctx,url):
@@ -63,24 +65,27 @@ async def graj(ctx,url):
         if f.endswith(".webm") or f.endswith(".part") or f.endswith(".mp3") or f.endswith(".m4a"):
             os.remove( os.path.join(os.getcwd(), f) )
 
-    if not ctx.message.guild.voice_client.is_connected():
-        await donogi(ctx)
+    if not ctx.voice_client:
+        channel = ctx.message.author.voice.channel
+        await channel.connect()
     try :
         author = ctx.message.author
-        voice_channel = author.voice_client
+        voice_channel = ctx.voice_client
 
         async with ctx.typing():
             filename = await YTDLSource.from_url(url, loop=bot.loop)
             print(filename)
             voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
-        # filename.replace("_"," ")
-        newname = ""
-        for w in filename.split("_")[:-1]:
-            newname += w+" "
-        await ctx.send(f'**Teraz leci:** \n{newname}.\n From url:** {url}**')
+        filename.replace("_"," ")
+        # nn = ""
+        # for w in filename.split("_")[:-1]:
+        #     nn += w+" "
+        # await ctx.send(f'**Teraz leci:** \n{filename}.\n From url:** {url}**')
+        embed = discord.Embed(title="Teraz leci:", description=f"[**{filename}**]({url})\nOd **{ctx.author}**", color=discord.Color.green())
+        await ctx.send(embed=embed)
         await ctx.message.delete()
     except:
-        await ctx.send("Nie ma mnie na żadnym kanale **sneed**.")
+        await ctx.send("Pojawił się **błąd**, ale nie wiem jaki :(")
 
 @bot.command(help='pomijam piosenke')
 async def pomin(ctx):

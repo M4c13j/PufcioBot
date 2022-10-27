@@ -4,4 +4,4 @@ from events import *
 from comms import *
 from misc import *
 
-bot.run(token)
+bot.run( token, log_handler=handler)

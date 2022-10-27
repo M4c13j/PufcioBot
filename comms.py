@@ -2,6 +2,7 @@ from settings import bot
 import discord
 import os
 from ytdlms import * 
+import requests
 
 @bot.command()
 async def test(ctx, *args):
@@ -40,11 +41,21 @@ async def where_am_i(ctx):
 
 @bot.command(help="dolacz do kanalu glosowego")
 async def donogi(ctx):
+    channel = ctx.message.author.voice.channel
+    if ctx.voice_client:
+        if ctx.voice_client.channel == channel:
+            await ctx.send(f"Już jestem na kanale **{channel}**!")
+            await ctx.message.delete()
+            return
     if not ctx.message.author.voice:
         await ctx.send(f"Nie jesteś na kanale głosowym lol.")
+        await ctx.message.delete()
         return
-    channel = ctx.message.author.voice.channel
-    await channel.connect()
+
+    if ctx.voice_client:
+        await ctx.voice_client.move_to(channel)
+    else:
+        await channel.connect()
     await ctx.send(f"Kicam do ciebie **{ctx.message.author}** na kanał **{channel}**")
     await ctx.message.delete()
 
@@ -65,17 +76,24 @@ async def graj(ctx,url):
         if f.endswith(".webm") or f.endswith(".part") or f.endswith(".mp3") or f.endswith(".m4a"):
             os.remove( os.path.join(os.getcwd(), f) )
 
-    if not ctx.voice_client:
-        channel = ctx.message.author.voice.channel
-        await channel.connect()
+    await donogi(ctx)
     try :
         author = ctx.message.author
         voice_channel = ctx.voice_client
 
         async with ctx.typing():
-            filename = await YTDLSource.from_url(url, loop=bot.loop)
-            print(filename)
-            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
+            arg = url
+            with youtube_dl.YoutubeDL({'format': 'bestaudio', 'noplaylist':'True'}) as ydl:
+                try: requests.get(arg)
+                except: info = ydl.extract_info(f"ytsearch:{arg}", download=False)['entries'][0]
+                else: info = ydl.extract_info(arg, download=False)
+            source = (info, info['formats'][0]['url'])
+            filename = url
+            FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=source, **FFMPEG_OPTS), after=lambda e: print('Everything done nice ziom', e))
+            # filename = await YTDLSource.from_url(url, loop=bot.loop)
+            # print(filename)
+            # voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
         filename.replace("_"," ")
         # nn = ""
         # for w in filename.split("_")[:-1]:
@@ -99,3 +117,4 @@ async def pomin(ctx):
 
 # https://medium.com/pythonland/build-a-discord-bot-in-python-that-plays-music-and-send-gifs-856385e605a1
 # https://discordpy.readthedocs.io/en/stable/api.html?highlight=message#
+# https://stackoverflow.com/questions/63647546/how-would-i-stream-audio-from-pytube-to-ffmpeg-and-discord-py-without-downloadin

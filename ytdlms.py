@@ -1,16 +1,18 @@
 import youtube_dl
 import discord
 import asyncio
+
 youtube_dl.utils.bug_reports_message = lambda: ''
 
 ytdl_format_options = {
-    'format': 'bestaudio/best',
+    'format': '140', # 136 - 720p, 137 - 1080p
     'restrictfilenames': True,
+    'preferredcodec': "mp3",
     'noplaylist': True,
     'nocheckcertificate': True,
     'ignoreerrors': False,
     'logtostderr': False,
-    'quiet': True,
+    # 'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
     'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
